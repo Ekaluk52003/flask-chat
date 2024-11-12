@@ -1,8 +1,9 @@
+import os
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default-dev-key')
 socketio = SocketIO(app)
 
 messages = []
@@ -38,4 +39,4 @@ def handle_typing(data):
     emit('typing_update', {'typing_users': list(typing_users)}, broadcast=True)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, debug=False)

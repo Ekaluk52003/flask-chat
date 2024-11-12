@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  chat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - FLASK_ENV=${FLASK_ENV}
+    restart: ${DOCKER_RESTART_POLICY}
+    expose:
+      - "${PORT}"
+    environment:
+      - FLASK_ENV=${FLASK_ENV}
+      - FLASK_DEBUG=${FLASK_DEBUG}
+      - SECRET_KEY=${SECRET_KEY}
+      - HOST=${HOST}
+      - PORT=${PORT}
+      - GUNICORN_WORKERS=${GUNICORN_WORKERS}
+      - GUNICORN_WORKER_CLASS=${GUNICORN_WORKER_CLASS}
+    command: >
+      gunicorn
+      --workers ${GUNICORN_WORKERS}
+      --worker-class ${GUNICORN_WORKER_CLASS}
+      --bind ${HOST}:${PORT}
+      app:app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://${HOST}:${PORT}/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - chat_network
+
+  caddy:
+    image: caddy:2-alpine
+    restart: ${DOCKER_RESTART_POLICY}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - DOMAIN=${DOMAIN}
+      - EMAIL=${EMAIL}
+    depends_on:
+      - chat
+    networks:
+      - chat_network
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  chat_network:
+    driver: bridge
