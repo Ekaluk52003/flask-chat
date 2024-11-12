@@ -8,19 +8,15 @@ services:
       - FLASK_ENV=${FLASK_ENV}
       - FLASK_DEBUG=${FLASK_DEBUG}
       - SECRET_KEY=${SECRET_KEY}
-      - GUNICORN_WORKERS=${GUNICORN_WORKERS}
-      - GUNICORN_WORKER_CLASS=${GUNICORN_WORKER_CLASS}
-      - GUNICORN_HOST=${GUNICORN_HOST}
-      - GUNICORN_PORT=${GUNICORN_PORT}
     command: >
       gunicorn
-      --worker-class ${GUNICORN_WORKER_CLASS}
-      --workers ${GUNICORN_WORKERS}
-      --bind ${GUNICORN_HOST}:${GUNICORN_PORT}
+      --worker-class eventlet
+      --workers 1
+      --bind 0.0.0.0:8000
       --log-level info
       --access-logfile -
       --error-logfile -
-      app:app
+      wsgi:app
     networks:
       - chat_network
 

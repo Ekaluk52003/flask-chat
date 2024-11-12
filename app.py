@@ -1,20 +1,7 @@
 
-# Use eventlet for WebSocket support
-import eventlet
-eventlet.monkey_patch()
-
 import os
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
-from engineio.async_drivers import eventlet
-
-
-
-app = Flask(__name__)
-# Get configuration from environment variables
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default-dev-key')
-app.config['DEBUG'] = os.getenv('FLASK_DEBUG', '0') == '1'
-
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default-dev-key')
