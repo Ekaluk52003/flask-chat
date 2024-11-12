@@ -1,27 +1,29 @@
 
+# Use eventlet for WebSocket support
+import eventlet
+eventlet.monkey_patch()
+
 import os
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 from engineio.async_drivers import eventlet
 
-# Use eventlet for WebSocket support
-import eventlet
-eventlet.monkey_patch()
+
 
 app = Flask(__name__)
 # Get configuration from environment variables
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default-dev-key')
 app.config['DEBUG'] = os.getenv('FLASK_DEBUG', '0') == '1'
 
-# Configure SocketIO with proper settings for production
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default-dev-key')
 socketio = SocketIO(
     app,
-    cors_allowed_origins="*",  # Configure according to your needs
     async_mode='eventlet',
+    cors_allowed_origins="*",
     logger=True,
-    engineio_logger=True,
-    ping_timeout=60,
-    ping_interval=25
+    engineio_logger=True
 )
 
 # Store messages and typing users in memory
