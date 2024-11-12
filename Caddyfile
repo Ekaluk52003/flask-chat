@@ -1,36 +1,20 @@
 {
-    email {$EMAIL}
+    admin off
 }
 
 {$DOMAIN} {
-    reverse_proxy chat:{$PORT} {
+    reverse_proxy chat:8000 {
         header_up Host {host}
         header_up X-Real-IP {remote_host}
         header_up X-Forwarded-For {remote_host}
         header_up X-Forwarded-Proto {scheme}
     }
 
-    # WebSocket support
     @websockets {
         header Connection *Upgrade*
         header Upgrade websocket
     }
-    reverse_proxy @websockets chat:{$PORT}
+    reverse_proxy @websockets chat:8000
 
-    # Enable compression
     encode zstd gzip
-
-    # Basic security headers
-    header {
-        # Enable HTTP Strict Transport Security (HSTS)
-        Strict-Transport-Security "max-age=31536000; includeSubDomains"
-        # Disable FLoC tracking
-        Permissions-Policy "interest-cohort=()"
-        # Enable XSS protection
-        X-XSS-Protection "1; mode=block"
-        # Prevent clickjacking
-        X-Frame-Options "SAMEORIGIN"
-        # Prevent MIME type sniffing
-        X-Content-Type-Options "nosniff"
-    }
 }

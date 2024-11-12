@@ -3,17 +3,13 @@ FROM python:3.9-slim
 # Set working directory
 WORKDIR /app
 
-# Accept build arguments
-ARG FLASK_ENV=production
-
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    FLASK_ENV=${FLASK_ENV}
+    PYTHONUNBUFFERED=1
 
 # Install system dependencies
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends gcc curl \
+    && apt-get install -y --no-install-recommends gcc \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -32,5 +28,5 @@ RUN adduser --disabled-password --gecos '' appuser \
     && chown -R appuser:appuser /app
 USER appuser
 
-# We'll use command from docker-compose.yml
+# Expose port
 EXPOSE 8000
